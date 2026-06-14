@@ -32,7 +32,7 @@ import type {
 } from '../types.js';
 import { CharacterState, Direction, MATRIX_EFFECT_DURATION, TILE_SIZE } from '../types.js';
 import { createCharacter, updateCharacter } from './characters.js';
-import { matrixEffectSeeds } from './matrixEffect.js';
+import { matrixEffectSeeds, prefersReducedMotion } from './matrixEffect.js';
 
 export class OfficeState {
   layout: OfficeLayout;
@@ -260,6 +260,34 @@ export class OfficeState {
     return { palette, hueShift };
   }
 
+  /**
+   * Begin the Matrix spawn/despawn effect on a character, honouring the OS
+   * `prefers-reduced-motion` setting.
+   *
+   * Normal motion: the column sweep animates over `MATRIX_EFFECT_DURATION`.
+   * Reduced motion: no animated rain. A 'spawn' resolves to an instant appear
+   * (no effect at all — the same path restored agents use); a 'despawn' is
+   * flagged complete (`timer = MATRIX_EFFECT_DURATION`) so the update loop
+   * removes the character on its next tick without any visible sweep. Empty
+   * `matrixEffectSeeds` are render-safe (the renderer falls back to `?? 0`).
+   */
+  private startMatrixEffect(ch: Character, kind: 'spawn' | 'despawn'): void {
+    if (prefersReducedMotion()) {
+      if (kind === 'spawn') {
+        ch.matrixEffect = null;
+        ch.matrixEffectTimer = 0;
+      } else {
+        ch.matrixEffect = 'despawn';
+        ch.matrixEffectTimer = MATRIX_EFFECT_DURATION;
+      }
+      ch.matrixEffectSeeds = [];
+      return;
+    }
+    ch.matrixEffect = kind;
+    ch.matrixEffectTimer = 0;
+    ch.matrixEffectSeeds = matrixEffectSeeds();
+  }
+
   addAgent(
     id: number,
     preferredPalette?: number,
@@ -315,9 +343,7 @@ export class OfficeState {
       ch.folderName = folderName;
     }
     if (!skipSpawnEffect) {
-      ch.matrixEffect = 'spawn';
-      ch.matrixEffectTimer = 0;
-      ch.matrixEffectSeeds = matrixEffectSeeds();
+      this.startMatrixEffect(ch, 'spawn');
     }
     this.characters.set(id, ch);
   }
@@ -334,9 +360,7 @@ export class OfficeState {
     if (this.selectedAgentId === id) this.selectedAgentId = null;
     if (this.cameraFollowId === id) this.cameraFollowId = null;
     // Start despawn animation instead of immediate delete
-    ch.matrixEffect = 'despawn';
-    ch.matrixEffectTimer = 0;
-    ch.matrixEffectSeeds = matrixEffectSeeds();
+    this.startMatrixEffect(ch, 'despawn');
     ch.bubbleType = null;
   }
 
@@ -477,9 +501,7 @@ export class OfficeState {
     if (parentCh) ch.dir = parentCh.dir;
     ch.isSubagent = true;
     ch.parentAgentId = parentAgentId;
-    ch.matrixEffect = 'spawn';
-    ch.matrixEffectTimer = 0;
-    ch.matrixEffectSeeds = matrixEffectSeeds();
+    this.startMatrixEffect(ch, 'spawn');
     this.characters.set(id, ch);
 
     this.subagentIdMap.set(key, id);
@@ -506,9 +528,7 @@ export class OfficeState {
         if (seat) seat.assigned = false;
       }
       // Start despawn animation — keep character in map for rendering
-      ch.matrixEffect = 'despawn';
-      ch.matrixEffectTimer = 0;
-      ch.matrixEffectSeeds = matrixEffectSeeds();
+      this.startMatrixEffect(ch, 'despawn');
       ch.bubbleType = null;
     }
     // Clean up tracking maps immediately so keys don't collide
@@ -537,9 +557,7 @@ export class OfficeState {
             if (seat) seat.assigned = false;
           }
           // Start despawn animation
-          ch.matrixEffect = 'despawn';
-          ch.matrixEffectTimer = 0;
-          ch.matrixEffectSeeds = matrixEffectSeeds();
+          this.startMatrixEffect(ch, 'despawn');
           ch.bubbleType = null;
         }
         this.subagentMeta.delete(id);

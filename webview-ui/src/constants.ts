@@ -34,6 +34,8 @@ export const MATRIX_TRAIL_OVERLAY_ALPHA = 0.6;
 export const MATRIX_TRAIL_EMPTY_ALPHA = 0.5;
 export const MATRIX_TRAIL_MID_THRESHOLD = 0.33;
 export const MATRIX_TRAIL_DIM_THRESHOLD = 0.66;
+/** Media query: when matched, the user has asked the OS to minimize animation. */
+export const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
 
 // ── Rendering ────────────────────────────────────────────────
 export const CHARACTER_SITTING_OFFSET_PX = 6;

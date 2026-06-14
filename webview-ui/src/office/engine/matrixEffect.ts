@@ -13,6 +13,7 @@ import {
   matrixGreenBright,
   matrixGreenDim,
   matrixGreenMid,
+  REDUCED_MOTION_QUERY,
 } from '../../constants.js';
 import type { Character, SpriteData } from '../types.js';
 import { MATRIX_EFFECT_DURATION } from '../types.js';
@@ -33,6 +34,19 @@ function generateSeeds(): number[] {
 }
 
 export { generateSeeds as matrixEffectSeeds };
+
+/**
+ * Whether the user's OS prefers reduced motion. Queried live (not cached) so a
+ * settings change takes effect without a reload. Window-guarded so it returns
+ * `false` under Node (tests, SSR), preserving the default animated behaviour there.
+ */
+export function prefersReducedMotion(): boolean {
+  return (
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia(REDUCED_MOTION_QUERY).matches
+  );
+}
 
 /**
  * Render a character with a Matrix-style digital rain spawn/despawn effect.
