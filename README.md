@@ -1,5 +1,5 @@
 <h1 align="center">
-    <a href="https://github.com/pixel-agents-hq/pixel-agents/discussions">
+    <a href="https://github.com/Aaron-1411/pixel-agents/discussions">
         <img src="webview-ui/public/banner.png" alt="Pixel Agents">
     </a>
 </h1>
@@ -10,16 +10,14 @@
 
 <div align="center" style="margin-top: 25px;">
 
-[![version](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fpablodelucca%2F3cd28398fa4a2c0a636e1d51d41aee39%2Fraw%2Fversion.json)](https://github.com/pixel-agents-hq/pixel-agents/releases)
-[![marketplaces](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fpablodelucca%2F3cd28398fa4a2c0a636e1d51d41aee39%2Fraw%2Finstalls.json)](https://marketplace.visualstudio.com/items?itemName=pablodelucca.pixel-agents)
-[![stars](https://img.shields.io/github/stars/pixel-agents-hq/pixel-agents?logo=github&color=0183ff&style=flat)](https://github.com/pixel-agents-hq/pixel-agents/stargazers)
-[![license](https://img.shields.io/github/license/pixel-agents-hq/pixel-agents?color=0183ff&style=flat)](https://github.com/pixel-agents-hq/pixel-agents/blob/main/LICENSE)
-[![good first issues](https://img.shields.io/github/issues/pixel-agents-hq/pixel-agents/good%20first%20issue?color=7057ff&label=good%20first%20issues)](https://github.com/pixel-agents-hq/pixel-agents/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
+[![stars](https://img.shields.io/github/stars/Aaron-1411/pixel-agents?logo=github&color=0183ff&style=flat)](https://github.com/Aaron-1411/pixel-agents/stargazers)
+[![license](https://img.shields.io/github/license/Aaron-1411/pixel-agents?color=0183ff&style=flat)](https://github.com/Aaron-1411/pixel-agents/blob/main/LICENSE)
+[![good first issues](https://img.shields.io/github/issues/Aaron-1411/pixel-agents/good%20first%20issue?color=7057ff&label=good%20first%20issues)](https://github.com/Aaron-1411/pixel-agents/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
 
 </div>
 
 <div align="center">
-<a href="https://marketplace.visualstudio.com/items?itemName=pablodelucca.pixel-agents">🛒 VS Code Marketplace</a> • <a href="https://github.com/pixel-agents-hq/pixel-agents/discussions">💬 Discussions</a> • <a href="https://github.com/pixel-agents-hq/pixel-agents/issues">🐛 Issues</a> • <a href="CONTRIBUTING.md">🤝 Contributing</a> • <a href="CHANGELOG.md">📋 Changelog</a>
+<a href="https://github.com/Aaron-1411/pixel-agents">📦 Source</a> • <a href="https://github.com/Aaron-1411/pixel-agents/discussions">💬 Discussions</a> • <a href="https://github.com/Aaron-1411/pixel-agents/issues">🐛 Issues</a> • <a href="CONTRIBUTING.md">🤝 Contributing</a> • <a href="CHANGELOG.md">📋 Changelog</a>
 </div>
 
 <br/>
@@ -28,7 +26,9 @@ Pixel Agents turns multi-agent AI systems into something you can actually see an
 
 Right now it works as a VS Code extension with Claude Code. The vision though, is a fully agent-agnostic, platform-agnostic interface for orchestrating any AI agents, deployable anywhere.
 
-This is the source code for the free Pixel Agents extension for VS Code — install from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=pablodelucca.pixel-agents) or [Open VSX](https://open-vsx.org/extension/pablodelucca/pixel-agents) with the full furniture catalog included.
+> **Forked from [pixel-agents-hq/pixel-agents](https://github.com/pixel-agents-hq/pixel-agents) by [Pablo De Lucca](https://github.com/pablodelucca).** This is a personal fork maintained by [@Aaron-1411](https://github.com/Aaron-1411) — not affiliated with or endorsed by the upstream project. For the official extension, install from the [original author's VS Code Marketplace listing](https://marketplace.visualstudio.com/items?itemName=pablodelucca.pixel-agents).
+
+This repository is a source-only fork — build it from source (see [Getting Started](#getting-started) below) with the full furniture catalog included.
 
 ![Pixel Agents screenshot](webview-ui/public/Screenshot.jpg)
 
@@ -56,12 +56,12 @@ This is the source code for the free Pixel Agents extension for VS Code — inst
 
 ## Getting Started
 
-If you just want to use Pixel Agents, the easiest way is to download the [VS Code extension](https://marketplace.visualstudio.com/items?itemName=pablodelucca.pixel-agents). If you want to play with the code, develop, or contribute, then:
+This fork is distributed as source only. To build and run it locally:
 
 ### Install from source
 
 ```bash
-git clone https://github.com/pixel-agents-hq/pixel-agents.git
+git clone https://github.com/Aaron-1411/pixel-agents.git
 cd pixel-agents
 npm install
 cd webview-ui && npm install && cd ..
@@ -143,19 +143,19 @@ For this to work, the architecture needs to be modular at every level:
 - **Agent-agnostic**: Claude Code today, but built to support Codex, OpenCode, Gemini, Cursor, Copilot, and others through composable adapters.
 - **Theme-agnostic**: community-created assets, skins, and themes from any contributor.
 
-We're actively working on the core module and adapter architecture that makes this possible. If you're interested to talk about this further, please visit our [Discussions Section](https://github.com/pixel-agents-hq/pixel-agents/discussions).
+We're actively working on the core module and adapter architecture that makes this possible. If you're interested to talk about this further, please visit our [Discussions Section](https://github.com/Aaron-1411/pixel-agents/discussions).
 
 ## Community & Contributing
 
-Use **[Issues](https://github.com/pixel-agents-hq/pixel-agents/issues)** to report bugs or request features. Join **[Discussions](https://github.com/pixel-agents-hq/pixel-agents/discussions)** for questions and conversations.
+Use **[Issues](https://github.com/Aaron-1411/pixel-agents/issues)** to report bugs or request features. Join **[Discussions](https://github.com/Aaron-1411/pixel-agents/discussions)** for questions and conversations.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for instructions on how to contribute.
 
 Please read our [Code of Conduct](CODE_OF_CONDUCT.md) before participating.
 
-## Supporting the Project
+## Supporting the Original Project
 
-If you find Pixel Agents useful, consider supporting its development:
+Pixel Agents was created by [Pablo De Lucca](https://github.com/pablodelucca). If you find it useful, please consider supporting the original author's work:
 
 <a href="https://github.com/sponsors/pablodelucca">
   <img src="https://img.shields.io/badge/Sponsor-GitHub-ea4aaa?logo=github" alt="GitHub Sponsors">
@@ -166,7 +166,7 @@ If you find Pixel Agents useful, consider supporting its development:
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=pixel-agents-hq/pixel-agents&type=Date)](https://www.star-history.com/?repos=pixel-agents-hq%2Fpixel-agents&type=date&legend=bottom-right)
+[![Star History Chart](https://api.star-history.com/svg?repos=Aaron-1411/pixel-agents&type=Date)](https://www.star-history.com/?repos=Aaron-1411%2Fpixel-agents&type=date&legend=bottom-right)
 
 ## License
 
