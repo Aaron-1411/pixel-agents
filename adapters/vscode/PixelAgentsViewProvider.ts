@@ -25,6 +25,7 @@ import { readConfig, writeConfig } from '../../server/src/configPersistence.js';
 import { setTerminalAdapter } from '../../server/src/fileWatcher.js';
 import type { LayoutWatcher } from '../../server/src/layoutPersistence.js';
 import {
+  isValidLayout,
   readLayoutFromFile,
   watchLayoutFile,
   writeLayoutToFile,
@@ -563,7 +564,7 @@ export class PixelAgentsViewProvider implements vscode.WebviewViewProvider {
         try {
           const raw = fs.readFileSync(uris[0].fsPath, 'utf-8');
           const imported = JSON.parse(raw) as Record<string, unknown>;
-          if (imported.version !== 1 || !Array.isArray(imported.tiles)) {
+          if (!isValidLayout(imported)) {
             vscode.window.showErrorMessage('Pixel Agents: Invalid layout file.');
             return;
           }

@@ -14,6 +14,30 @@ export interface LayoutWatcher {
   dispose(): void;
 }
 
+/**
+ * Validate a parsed layout object before it is persisted or pushed to the webview.
+ *
+ * The import path (Settings → Import Layout) reads an arbitrary user-supplied JSON
+ * file. A malformed file that slips through would corrupt the shared
+ * ~/.pixel-agents/layout.json (used across every VS Code window) and crash webview
+ * migration: a non-array `furniture` throws in `migrateFurnitureTypes`, and missing
+ * or mismatched dimensions make `layoutToTileMap` index out of bounds. This guards
+ * every structural invariant the webview relies on.
+ */
+export function isValidLayout(layout: unknown): layout is Record<string, unknown> {
+  if (typeof layout !== 'object' || layout === null) return false;
+  const l = layout as Record<string, unknown>;
+  if (l.version !== 1) return false;
+  if (!Array.isArray(l.tiles)) return false;
+  if (!Array.isArray(l.furniture)) return false;
+  const { cols, rows } = l;
+  if (!Number.isInteger(cols) || (cols as number) <= 0) return false;
+  if (!Number.isInteger(rows) || (rows as number) <= 0) return false;
+  if (l.tiles.length !== (cols as number) * (rows as number)) return false;
+  if (l.tileColors !== undefined && !Array.isArray(l.tileColors)) return false;
+  return true;
+}
+
 function getLayoutFilePath(): string {
   return path.join(os.homedir(), LAYOUT_FILE_DIR, LAYOUT_FILE_NAME);
 }
