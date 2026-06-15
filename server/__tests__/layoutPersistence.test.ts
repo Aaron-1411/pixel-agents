@@ -1,6 +1,9 @@
-import { describe, expect, it } from 'vitest';
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { isValidLayout } from '../src/layoutPersistence.js';
+import { isValidLayout, readLayoutFromFile, writeLayoutToFile } from '../src/layoutPersistence.js';
 
 /** A minimal layout that satisfies every structural invariant. */
 function validLayout(): Record<string, unknown> {
@@ -61,5 +64,51 @@ describe('isValidLayout', () => {
 
   it('rejects when tileColors is present but not an array', () => {
     expect(isValidLayout({ ...validLayout(), tileColors: {} })).toBe(false);
+  });
+});
+
+describe('readLayoutFromFile', () => {
+  // getLayoutFilePath() builds from os.homedir(), which honours $HOME on POSIX,
+  // so redirecting HOME lets the real file I/O run against a throwaway dir.
+  const originalHome = process.env.HOME;
+  let tempHome: string;
+
+  beforeEach(() => {
+    tempHome = fs.mkdtempSync(path.join(os.tmpdir(), 'pxl-layout-read-test-'));
+    process.env.HOME = tempHome;
+  });
+
+  afterEach(() => {
+    if (originalHome === undefined) {
+      delete process.env.HOME;
+    } else {
+      process.env.HOME = originalHome;
+    }
+    fs.rmSync(tempHome, { recursive: true, force: true });
+  });
+
+  function writeRawLayout(contents: string): void {
+    const dir = path.join(tempHome, '.pixel-agents');
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, 'layout.json'), contents, 'utf-8');
+  }
+
+  it('returns null when no layout file exists', () => {
+    expect(readLayoutFromFile()).toBeNull();
+  });
+
+  it('round-trips a valid layout written by writeLayoutToFile', () => {
+    writeLayoutToFile(validLayout());
+    expect(readLayoutFromFile()).toEqual(validLayout());
+  });
+
+  it('returns null for malformed JSON', () => {
+    writeRawLayout('{ not valid json');
+    expect(readLayoutFromFile()).toBeNull();
+  });
+
+  it('returns null for a parseable but structurally invalid layout', () => {
+    writeRawLayout(JSON.stringify({ ...validLayout(), furniture: 'nope' }));
+    expect(readLayoutFromFile()).toBeNull();
   });
 });

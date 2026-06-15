@@ -138,8 +138,8 @@ describe('migrateVsCodeState', () => {
   it('migrates legacy layout from workspaceState to ~/.pixel-agents/layout.json', () => {
     const legacyLayout = {
       version: 1,
-      cols: 20,
-      rows: 11,
+      cols: 3,
+      rows: 1,
       tiles: [0, 1, 2],
       furniture: [{ type: 'desk', uid: 'd1', col: 0, row: 0 }],
     };
@@ -154,8 +154,8 @@ describe('migrateVsCodeState', () => {
   });
 
   it('does not clobber an existing layout.json file when migrating legacy layout', () => {
-    const legacyLayout = { version: 1, cols: 20, rows: 11, tiles: [0], furniture: [] };
-    const existingLayout = { version: 1, cols: 30, rows: 15, tiles: [9], furniture: [] };
+    const legacyLayout = { version: 1, cols: 1, rows: 1, tiles: [0], furniture: [] };
+    const existingLayout = { version: 1, cols: 1, rows: 1, tiles: [9], furniture: [] };
     writeLayoutToFile(existingLayout);
     const { context, workspaceStore } = makeContext({}, { 'pixel-agents.layout': legacyLayout });
     const adapter = new FileStateAdapter({ namespace: 'vscode' });

@@ -47,7 +47,14 @@ export function readLayoutFromFile(): Record<string, unknown> | null {
   try {
     if (!fs.existsSync(filePath)) return null;
     const raw = fs.readFileSync(filePath, 'utf-8');
-    return JSON.parse(raw) as Record<string, unknown>;
+    const parsed = JSON.parse(raw) as unknown;
+    if (!isValidLayout(parsed)) {
+      console.error(
+        '[Pixel Agents] Ignoring structurally invalid layout file; falling back to default',
+      );
+      return null;
+    }
+    return parsed;
   } catch (err) {
     console.error('[Pixel Agents] Failed to read layout file:', err);
     return null;
@@ -152,7 +159,11 @@ export function watchLayoutFile(
       }
 
       const raw = fs.readFileSync(filePath, 'utf-8');
-      const layout = JSON.parse(raw) as Record<string, unknown>;
+      const layout = JSON.parse(raw) as unknown;
+      if (!isValidLayout(layout)) {
+        console.error('[Pixel Agents] Ignoring structurally invalid external layout change');
+        return;
+      }
       console.log('[Pixel Agents] External layout change detected');
       onExternalChange(layout);
     } catch (err) {
