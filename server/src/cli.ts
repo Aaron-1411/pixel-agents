@@ -8,6 +8,7 @@
  * Each connecting WebSocket client receives the full state on webviewReady.
  */
 
+import { spawn } from 'child_process';
 import * as path from 'path';
 
 import { AgentRuntime } from './agentRuntime.js';
@@ -29,10 +30,11 @@ import { PixelAgentsServer } from './server.js';
 interface CliArgs {
   port: number;
   host: string;
+  open: boolean;
 }
 
 function parseArgs(argv: string[]): CliArgs {
-  const args: CliArgs = { port: 3100, host: '127.0.0.1' };
+  const args: CliArgs = { port: 3100, host: '127.0.0.1', open: true };
   for (let i = 0; i < argv.length; i++) {
     if ((argv[i] === '--port' || argv[i] === '-p') && argv[i + 1]) {
       args.port = parseInt(argv[i + 1], 10);
@@ -40,17 +42,32 @@ function parseArgs(argv: string[]): CliArgs {
     } else if (argv[i] === '--host' && argv[i + 1]) {
       args.host = argv[i + 1];
       i++;
+    } else if (argv[i] === '--no-open') {
+      args.open = false;
     } else if (argv[i] === '--help') {
       console.log(`Usage: pixel-agents [options]
 
 Options:
   --port, -p <number>   Port to listen on (default: 3100)
   --host <string>       Host to bind to (default: 127.0.0.1)
+  --no-open             Do not open the browser automatically
   --help                Show this help message`);
       process.exit(0);
     }
   }
   return args;
+}
+
+/** Open a URL in the user's default browser. Best-effort; never throws. */
+function openBrowser(url: string): void {
+  const platform = process.platform;
+  const cmd = platform === 'darwin' ? 'open' : platform === 'win32' ? 'cmd' : 'xdg-open';
+  const args = platform === 'win32' ? ['/c', 'start', '', url] : [url];
+  try {
+    spawn(cmd, args, { stdio: 'ignore', detached: true }).unref();
+  } catch {
+    // Browser open is a convenience, not a requirement — ignore failures.
+  }
 }
 
 // ── Main ──────────────────────────────────────────────────────
@@ -61,6 +78,9 @@ async function main(): Promise<void> {
   // dist/ contains both the CLI bundle and the assets/ + webview/ directories
   const distRoot = __dirname;
   const staticDir = path.join(distRoot, 'webview');
+  // copyHookScript() appends 'dist/hooks/...' itself, so it expects the package
+  // root (the parent of dist/), matching how the VS Code extension calls it.
+  const packageRoot = path.dirname(distRoot);
 
   // ── Load assets on startup (same pipeline as VS Code extension) ──
   console.log('[Pixel Agents] Loading assets...');
@@ -104,7 +124,7 @@ async function main(): Promise<void> {
           `http://127.0.0.1:${currentConfig.port}`,
           currentConfig.token,
         );
-        copyHookScript(distRoot);
+        copyHookScript(packageRoot);
         console.log('[Pixel Agents] Hooks installed (user toggle)');
       } else {
         await claudeProvider.uninstallHooks();
@@ -132,7 +152,7 @@ async function main(): Promise<void> {
     if (runtime.hooksEnabled.current) {
       try {
         await claudeProvider.installHooks(`http://127.0.0.1:${config.port}`, config.token);
-        copyHookScript(distRoot);
+        copyHookScript(packageRoot);
         console.log('[Pixel Agents] Hooks installed');
       } catch (err) {
         console.error('[Pixel Agents] Failed to install hooks:', err);
@@ -150,7 +170,12 @@ async function main(): Promise<void> {
       runtime.startStaleCheck();
     }
 
-    console.log(`\n  Pixel Agents server running at http://${args.host}:${config.port}\n`);
+    const url = `http://${args.host}:${config.port}`;
+    console.log(`\n  Pixel Agents server running at ${url}\n`);
+
+    if (args.open) {
+      openBrowser(url);
+    }
 
     // ── Graceful shutdown ──
     function shutdown(): void {
